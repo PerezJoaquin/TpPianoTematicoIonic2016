@@ -54,10 +54,14 @@ angular.module('starter.controllers', ['ngCordova'])
 
 .controller('PianoCtrl', function($scope, $cordovaVibration, $cordovaFile) {
   $scope.ini = 0;
+  var jsonSec;
+  var count = 0;
   $scope.boton = function(Pboton){
     if($scope.ini == 0){ 
       $scope.secuencia = [];
       $scope.ini = 1;
+      jsonSec = { };
+      count = 0;
     }
     $scope.secuencia.push(Pboton);
     console.log($scope.secuencia);
@@ -122,7 +126,9 @@ angular.module('starter.controllers', ['ngCordova'])
     } catch(e){
       console.log("Error vibrar");
     }
-    //GUARDAR ARCHIVO  
+    count++;
+    jsonSec[count + "sonido"] = sonido;
+    alert(JSON.stringify(jsonSec));
   }
 
   $scope.guarSec = function(){
@@ -130,8 +136,8 @@ angular.module('starter.controllers', ['ngCordova'])
       var secuencia = $scope.secuencia.toString();
       $cordovaFile.writeFile(cordova.file.dataDirectory, "secuencia.txt", secuencia, true)
       .then(function (success) {
-        //alert("creado y escrito");
-        alert(secuencia);
+        alert("Secuencia guardada");
+        //alert(secuencia);
         $scope.ini = 0;
       }, function (error) {
         alert("error escritura");
@@ -139,7 +145,18 @@ angular.module('starter.controllers', ['ngCordova'])
     }catch(e){
       console.log("No es dispositivo movil. No se escribió archivo");
     }
-  
+    //GUARDAR ARCHIVO  
+    try{
+      var secuencia = $scope.secuencia.toString();
+      $cordovaFile.writeFile(cordova.file.dataDirectory, "json.txt", JSON.stringify(jsonSec), true)
+      .then(function (success) {
+        alert(JSON.stringify(jsonSec));
+      }, function (error) {
+        alert("error escritura");
+      });
+    }catch(e){
+      console.log("No es dispositivo movil. No se escribió archivo");
+    }  
   }
 
   $scope.repSec = function(){
@@ -221,5 +238,18 @@ angular.module('starter.controllers', ['ngCordova'])
   }
 })
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+.controller('PlaylistsCtrl', function($scope, $cordovaFile) {
+  $scope.reload = function(){
+    try{
+      $cordovaFile.readAsText(cordova.file.dataDirectory, "json.txt")
+      .then(function (success) {
+        alert(success);
+        $scope.json = /*JSON.parse(*/success/*)*/;
+      }, function (error) {
+        alert("Error lectura");
+      });
+    }catch(e){
+
+    }
+  }
 });
