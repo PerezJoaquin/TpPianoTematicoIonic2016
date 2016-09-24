@@ -143,57 +143,68 @@ angular.module('starter.controllers', ['ngCordova'])
   }
 
   $scope.repSec = function(){
-    /*$scope.secuencia.forEach(function(item, index){
-      console.log(item);
-    });*/
     $cordovaFile.readAsText(cordova.file.dataDirectory, "secuencia.txt")
     .then(function (success) {
-      //alert(JSON.stringify(leido.$$state));
-      alert(success);
       var secArray = success.split(',');
-      secArray.forEach(function(item, index){
+      var currentTime = new Date().getTime();
+      for(index = 0; index < secArray.length;){
         var sonido;
-        //setTimeout(function () {
-          switch(item){
-            case 1:
+        if(index == 0){currentTime = 0;}
+        while(currentTime + 3000 < new Date().getTime()){
+          document.getElementById("bt1").style = " ";
+          document.getElementById("bt2").style = " ";
+          document.getElementById("bt3").style = " ";
+          document.getElementById("bt4").style = " ";
+          document.getElementById("bt5").style = " ";
+          document.getElementById("bt6").style = " ";
+          document.getElementById("bt7").style = " ";
+          document.getElementById("bt8").style = " ";
+          document.getElementById("bt9").style = " ";
+          switch(secArray[index]){
+            case '1':
               document.getElementById("bt1").style = "border: 2px solid #e60000;";
               sonido = 'genji';
               break;
-            case 2:
+            case '2':
               document.getElementById("bt2").style = "border: 2px solid #e60000;";
               sonido = 'phara';
               break;
-            case 3:
+            case '3':
               document.getElementById("bt3").style = "border: 2px solid #e60000;";
               sonido = '76';
               break;
-            case 4:
+            case '4':
               document.getElementById("bt4").style = "border: 2px solid #e60000;";
               sonido = 'hanzo';
               break;
-            case 5:
+            case '5':
               document.getElementById("bt5").style = "border: 2px solid #e60000;";
               sonido = 'widow';
               break;
-            case 6:
+            case '6':
               document.getElementById("bt6").style = "border: 2px solid #e60000;";
               sonido = 'dva';
               break;
-            case 7:
+            case '7':
               document.getElementById("bt7").style = "border: 2px solid #e60000;";
               sonido = 'zarya';
               break;
-            case 8:
+            case '8':
               document.getElementById("bt8").style = "border: 2px solid #e60000;";
               sonido = 'mercy';
               break;
-            case 9:
+            case '9':
               document.getElementById("bt9").style = "border: 2px solid #e60000;";
               sonido = 'zenyatta';
               break;
+            default:
+              sonido = ' ';
+              alert("default");
           }
           try{
-            window.plugins.NativeAudio.play(sonido);
+            currentTime = new Date().getTime();
+            index++
+            window.plugins.NativeAudio.play(sonido); 
           }catch(e){
             console.log("Error Sonido " + sonido);
           }
@@ -202,8 +213,8 @@ angular.module('starter.controllers', ['ngCordova'])
           } catch(e){
             console.log("Error vibrar");
           }
-       // }, 4000);
-      });
+        }
+      }
     }, function (error) {
       alert("Error lectura");
     });
