@@ -52,8 +52,16 @@ angular.module('starter.controllers', ['ngCordova'])
 })
 
 
-.controller('PianoCtrl', function($scope, $cordovaVibration) {
+.controller('PianoCtrl', function($scope, $cordovaVibration, $cordovaFile) {
+  $scope.ini = 0;
   $scope.boton = function(Pboton){
+    if($scope.ini == 0){ 
+      $scope.secuencia = [];
+      $scope.ini = 1;
+    }
+    $scope.secuencia.push(Pboton);
+    console.log($scope.secuencia);
+    
     //OUTLINE EN BOTON PRESIONADO
     document.getElementById("bt1").style = " ";
     document.getElementById("bt2").style = " ";
@@ -118,11 +126,87 @@ angular.module('starter.controllers', ['ngCordova'])
   }
 
   $scope.guarSec = function(){
-    
+    try{
+      var secuencia = $scope.secuencia.toString();
+      $cordovaFile.writeFile(cordova.file.dataDirectory, "secuencia.txt", secuencia, true)
+      .then(function (success) {
+        //alert("creado y escrito");
+        alert(secuencia);
+        $scope.ini = 0;
+      }, function (error) {
+        alert("error escritura");
+      });
+    }catch(e){
+      console.log("No es dispositivo movil. No se escribió archivo");
+    }
+  
   }
 
   $scope.repSec = function(){
-    
+    /*$scope.secuencia.forEach(function(item, index){
+      console.log(item);
+    });*/
+    $cordovaFile.readAsText(cordova.file.dataDirectory, "secuencia.txt")
+    .then(function (success) {
+      //alert(JSON.stringify(leido.$$state));
+      alert(success);
+      var secArray = success.split(',');
+      secArray.forEach(function(item, index){
+        var sonido;
+        //setTimeout(function () {
+          switch(item){
+            case 1:
+              document.getElementById("bt1").style = "border: 2px solid #e60000;";
+              sonido = 'genji';
+              break;
+            case 2:
+              document.getElementById("bt2").style = "border: 2px solid #e60000;";
+              sonido = 'phara';
+              break;
+            case 3:
+              document.getElementById("bt3").style = "border: 2px solid #e60000;";
+              sonido = '76';
+              break;
+            case 4:
+              document.getElementById("bt4").style = "border: 2px solid #e60000;";
+              sonido = 'hanzo';
+              break;
+            case 5:
+              document.getElementById("bt5").style = "border: 2px solid #e60000;";
+              sonido = 'widow';
+              break;
+            case 6:
+              document.getElementById("bt6").style = "border: 2px solid #e60000;";
+              sonido = 'dva';
+              break;
+            case 7:
+              document.getElementById("bt7").style = "border: 2px solid #e60000;";
+              sonido = 'zarya';
+              break;
+            case 8:
+              document.getElementById("bt8").style = "border: 2px solid #e60000;";
+              sonido = 'mercy';
+              break;
+            case 9:
+              document.getElementById("bt9").style = "border: 2px solid #e60000;";
+              sonido = 'zenyatta';
+              break;
+          }
+          try{
+            window.plugins.NativeAudio.play(sonido);
+          }catch(e){
+            console.log("Error Sonido " + sonido);
+          }
+          try{
+            $cordovaVibration.vibrate(100);
+          } catch(e){
+            console.log("Error vibrar");
+          }
+       // }, 4000);
+      });
+    }, function (error) {
+      alert("Error lectura");
+    });
   }
 })
 
